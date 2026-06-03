@@ -1,0 +1,1095 @@
+{
+  "info": {
+    "_postman_id": "control-rh-collection",
+    "name": "Control RH API - Complete",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"pass1234\",\n  \"password_confirm\": \"pass1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "register",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Login (obtain tokens)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"pass1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login",
+                ""
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.access) { pm.collectionVariables.set('access_token', json.access); }",
+                  "if (json.refresh) { pm.collectionVariables.set('refresh_token', json.refresh); }",
+                  "pm.test('Has access token', () => { pm.expect(json).to.have.property('access'); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token Refresh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/token/refresh/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "token",
+                "refresh",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Logout (blacklist refresh)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "logout",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Profile (me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "me",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Departamentos",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departamentos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "departamentos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"DEP001\",\n  \"nombre\": \"Recursos Humanos\",\n  \"descripcion\": \"Departamento de RRHH\",\n  \"presupuesto_anual\": 100000.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departamentos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "departamentos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retrieve",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departamentos/{{departamento_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "departamentos",
+                "{{departamento_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (PUT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"RRHH Actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/departamentos/{{departamento_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "departamentos",
+                "{{departamento_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departamentos/{{departamento_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "departamentos",
+                "{{departamento_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Activos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/departamentos/activos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "departamentos",
+                "activos",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Puestos",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puestos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puestos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"PST001\",\n  \"titulo\": \"Analista\",\n  \"salario_base\": 500.00,\n  \"salario_maximo\": 800.00,\n  \"departamento\": {{departamento_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/puestos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puestos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retrieve",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puestos/{{puesto_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puestos",
+                "{{puesto_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (PUT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titulo\": \"Analista Senior\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/puestos/{{puesto_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puestos",
+                "{{puesto_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puestos/{{puesto_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puestos",
+                "{{puesto_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Empleados del puesto",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/puestos/{{puesto_id}}/empleados_puesto/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "puestos",
+                "{{puesto_id}}",
+                "empleados_puesto",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Empleados",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/empleados/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"numero_empleado\": \"EMP001\",\n  \"cedula\": \"1712345678\",\n  \"nombre\": \"Juan\",\n  \"apellido\": \"Perez\",\n  \"edad\": 30,\n  \"email\": \"juan.perez@example.com\",\n  \"fecha_nacimiento\": \"1996-01-01\",\n  \"fecha_ingreso\": \"2024-01-01\",\n  \"salario_actual\": 600.00,\n  \"tipo_contrato\": \"indefinido\",\n  \"puesto\": {{puesto_id}},\n  \"departamento\": {{departamento_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/empleados/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retrieve",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/empleados/{{empleado_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                "{{empleado_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (PUT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salario_actual\": 650.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/empleados/{{empleado_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                "{{empleado_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/empleados/{{empleado_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                "{{empleado_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Activos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/empleados/activos/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                "activos",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Historial Nominas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/empleados/{{empleado_id}}/historial_nominas/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                "{{empleado_id}}",
+                "historial_nominas",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Historial Asistencia",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/empleados/{{empleado_id}}/historial_asistencia/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "empleados",
+                "{{empleado_id}}",
+                "historial_asistencia",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Nominas",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/nominas/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"empleado\": {{empleado_id}},\n  \"mes\": 6,\n  \"año\": 2026,\n  \"salario_base\": 600.00,\n  \"bono\": 50.00,\n  \"descuentos\": 20.00,\n  \"salario_neto\": 630.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/nominas/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retrieve",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/nominas/{{nomina_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                "{{nomina_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (PUT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"bono\": 75.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/nominas/{{nomina_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                "{{nomina_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/nominas/{{nomina_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                "{{nomina_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Estadisticas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/nominas/estadisticas/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                "estadisticas",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Marcar pagada (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/nominas/{{nomina_id}}/marcar_pagada/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "nominas",
+                "{{nomina_id}}",
+                "marcar_pagada",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Asistencias",
+      "item": [
+        {
+          "name": "List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/asistencias/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asistencias",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"empleado\": {{empleado_id}},\n  \"fecha\": \"2026-06-01\",\n  \"status\": \"presente\",\n  \"hora_entrada\": \"08:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/asistencias/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asistencias",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Retrieve",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/asistencias/{{asistencia_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asistencias",
+                "{{asistencia_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update (PUT)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"hora_salida\": \"17:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/asistencias/{{asistencia_id}}/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asistencias",
+                "{{asistencia_id}}",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Registrar salida (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/asistencias/{{asistencia_id}}/registrar_salida/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asistencias",
+                "{{asistencia_id}}",
+                "registrar_salida",
+                ""
+              ]
+            }
+          }
+        },
+        {
+          "name": "Presentes hoy",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/asistencias/presentes_hoy/",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "asistencias",
+                "presentes_hoy",
+                ""
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "access_token",
+      "value": ""
+    },
+    {
+      "key": "refresh_token",
+      "value": ""
+    },
+    {
+      "key": "departamento_id",
+      "value": "1"
+    },
+    {
+      "key": "puesto_id",
+      "value": "1"
+    },
+    {
+      "key": "empleado_id",
+      "value": "1"
+    },
+    {
+      "key": "nomina_id",
+      "value": "1"
+    },
+    {
+      "key": "asistencia_id",
+      "value": "1"
+    }
+  ]
+}
